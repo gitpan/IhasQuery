@@ -1,0 +1,7 @@
+# This is the default for Testing with SQLite3.
+# If you want to test another dbms you will need to modify this file
+# All lines preceded by # will be ignored as comments.
+dbistr=dbi:SQLite:testdb1.db
+dbiusr=
+dbipas=
+dbiopt=

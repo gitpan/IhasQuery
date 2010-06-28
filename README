@@ -1,0 +1,62 @@
+IhasQuery
+
+Version 0.03
+
+This Module aims to take the repetitiveness out of simple database activity. It delivers far less than an ORM like DBIC, but is also far simpler and easier to learn. At this time it only supports INSERT, UPDATE, DELETE, SELECT, and COUNT, and it supports a WHERE clause. It is also possible to execute a string as a SQL command. Future enhancements will support a Stored Procedure interface, GROUP BY and ORDER BY. It is not intended to add support for JOIN, if that support is ever added it would be implemented as mocking a View.
+
+IhQ is a sensible choice if you are concerned with basic SQL operations, and can move any joins out to a View or Stored Procedure. It's advantage is that it is pretty simple and is intuitive if you already know SQL.
+
+I presume that others have written similar wrappers in the past, and in fact IhasQuery is superficially similar to Fey:SQL, but differs significantly in that it requires no predefinition (it needs a DBI handle and the name of a table, which is close enough to no predefinition) and is dumber.
+
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+You may want to look at the Testing instructions. The bundled tests under t run with sqlite, but as more features are added and tests don't work properly with sqlite, additional tests will be added under the directory t2. This is done so that a reasonable set of tests can be run at install time, and more careful sysadmins can run a more exhaustive set of tests against their specific dbms installation. 
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc IhasQuery
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=IhasQuery
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/IhasQuery
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/IhasQuery
+
+    Search CPAN
+        http://search.cpan.org/dist/IhasQuery/
+
+
+LICENSE AND COPYRIGHT
+
+Copyright (C) 2010 John Karr
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 3 dated June, 1991 or at your option
+any later version. This program is not available under the Artistic License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A copy of the GNU General Public License is available in the source tree;
+if not, write to the Free Software Foundation, Inc.,
+59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+

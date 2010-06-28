@@ -1,0 +1,200 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IhasQuery</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#ihasquery__a_simple_object_oriented_wrapper_for_dbi_">IhasQuery: A simple Object Oriented Wrapper for DBI.</a></li>
+	<li><a href="#ihasquery">IhasQuery</a></li>
+	<ul>
+
+		<li><a href="#version_0_03">Version 0.03</a></li>
+		<li><a href="#usage">Usage</a></li>
+		<li><a href="#new">new</a></li>
+		<li><a href="#field_values__fields">field_values, fields</a></li>
+		<li><a href="#count__count_all">count, count_all</a></li>
+		<li><a href="#where__setwhere">where, setwhere</a></li>
+		<li><a href="#preview">preview</a></li>
+		<li><a href="#clear">clear</a></li>
+		<li><a href="#fetchrow__fetchrow_hash">fetchrow, fetchrow_hash</a></li>
+		<li><a href="#last_row__last_error">last_row, last_error</a></li>
+		<li><a href="#database_methods__delete__insert__select__update">Database Methods: delete, insert, select, update</a></li>
+		<li><a href="#query">query</a></li>
+	</ul>
+
+	<li><a href="#joins">joins</a></li>
+	<li><a href="#catalyst_models">Catalyst Models</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#support">SUPPORT</a></li>
+	<li><a href="#acknowledgements">ACKNOWLEDGEMENTS</a></li>
+	<li><a href="#license_and_copyright">LICENSE AND COPYRIGHT</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="ihasquery__a_simple_object_oriented_wrapper_for_dbi_">IhasQuery: A simple Object Oriented Wrapper for DBI.</a></h1>
+<p>Version 0.022</p>
+<p>
+</p>
+<hr />
+<h1><a name="ihasquery">IhasQuery</a></h1>
+<p>
+</p>
+<h2><a name="version_0_03">Version 0.03</a></h2>
+<p>This Module aims to take the repetitiveness out of simple database activity. It delivers far less than an ORM like DBIC, but is also far simpler and easier to learn. At this time it only supports INSERT, UPDATE, DELETE, SELECT, and COUNT, and it supports a WHERE clause. It is also possible to execute a string as a SQL command. Future enhancements will support a Stored Procedure interface, GROUP BY and ORDER BY. It is not intended to add support for JOIN, if that support is ever added it would be implemented as mocking a View.</p>
+<p>IhQ is a sensible choice if you are concerned with basic SQL operations, and can move any joins out to a View or Stored Procedure. It's advantage is that it is pretty simple and is intuitive if you already know SQL.</p>
+<p>I presume that others have written similar wrappers in the past, and in fact IhasQuery is superficially similar to Fey:SQL, but differs significantly in that it requires no predefinition (it needs a DBI handle and the name of a table, which is close enough to no predefinition) and is dumber.</p>
+<p>
+</p>
+<h2><a name="usage">Usage</a></h2>
+<pre>
+        use IhasQuery ; 
+ 
+        my $fieldname = &lt;I&gt;some field in sometable&lt;/I&gt;  ;
+        my $queryvalue = &lt;I&gt;some value I want to match&lt;/I&gt; ;
+        my $dbh = &lt;I&gt;... some code to create a DBI handle, see the DBI documentation...&lt;/I&gt; ;
+        my $table_stuff = IhasQuery-&gt;new( $dbh, 'stuff' ) ; 
+        $table_stuff-&gt;setwhere( $fieldname, '=', $queryvalue ) ;
+        say $table_stuff-&gt;preview( 'SELECT' ) ; # see the SQL for select
+        $table_stuff-&gt;select() ; # do SQL
+        my %HASH = $q-&gt;fetchrow_hash() ;
+        # Execute the same query but in fewer lines
+        $table_stuff-&gt;select( 'SETWHERE' =&gt; [ $fieldname, '=', $queryvalue ], ) ;</pre>
+<p>
+</p>
+<h2><a name="new">new</a></h2>
+<p>The new constructor requires a valid DBI Handle. It doesn't check anything, so you won't know anything is wrong until you try to execute something. By passing the DBI Handle rather than instiating it internally you can have any number of IhasQuery objects all sharing the same DBI Handle. The second argument binds the object to a specific table (required).</p>
+<p>
+</p>
+<h2><a name="field_values__fields">field_values, fields</a></h2>
+<p>This sets a Hash used when Fields/Values are required. fields is used to retrieve the list of fields in the current resultset, or in the hash that was passed into field_values. The list is internally updated when a select query is run or field_values are updated.</p>
+<p>
+</p>
+<h2><a name="count__count_all">count, count_all</a></h2>
+<p>The count method immediately executes SELECT COUNT (*) with the current where clause, and returns the result as a simple scalar value. 
+The count_all method does the same thing, but instead sets the current Where clause to ALL.</p>
+<pre>
+        my $count = $q-&gt;count() ;</pre>
+<p>
+</p>
+<h2><a name="where__setwhere">where, setwhere</a></h2>
+<p>Provide the content of the where clause. The method <code>where()</code> requires providing the exact sql (don't include where as it is prepended when generating the query). The method <code>setwhere()</code> takes three arguments $fieldname, $operator, $value and creates the where clause. Normally if you want to return ALL rows pass the string 'ALL' to where. $q-&gt;where( 'ALL' ), if no where is specified, the default is ALL.</p>
+<p>
+</p>
+<h2><a name="preview">preview</a></h2>
+<p><code>preview()</code> returns the query that would be executed. You should pass the operation as an upercase string, $q-&gt;preview('INSERT'), preview tries to generate a preview regardless.</p>
+<p>
+</p>
+<h2><a name="clear">clear</a></h2>
+<p>Clears all current query settings. Whenever values are passed to an IhQ object they remain until overwritten or cleared. It is a good practice to use clear frequently. When 'CLEAR' is specified in the hash passed to a database method, a dummy value is required, the value passed is ignored and clear is processed first.</p>
+<pre>
+        $q-&gt;clear() ; # Clear all values held in $q.
+        $q-&gt;select( 
+           'CLEAR' =&gt; 0 ,  # The value here does not matter, it is ignored.
+           'WHERE' =&gt; 'ALL' ) ;</pre>
+<p>
+</p>
+<h2><a name="fetchrow__fetchrow_hash">fetchrow, fetchrow_hash</a></h2>
+<p>These two commands fetch the next row from the current resultset. fetchrow returns an array, fetchrow_hash returns a hash. When using fetchrow the fields method can be used to match fieldnames to the rows.</p>
+<p>
+</p>
+<h2><a name="last_row__last_error">last_row, last_error</a></h2>
+<p>After the last row is fetched with fetchrow or fetchrow_hash, the last_row method will return true, last_error returns the last DBI error recieved. Both of these values are cleared immediately before any query execution.</p>
+<p>
+</p>
+<h2><a name="database_methods__delete__insert__select__update">Database Methods: delete, insert, select, update</a></h2>
+<p>These methods provide the sequel basics. Most of the other methods can be passed together in a hash, where the method name capitalized serves as the key. field_values and setwhere respectively require a hash reference and an array reference. The methods return 0 or the dbi error. Anything returned needs to be accessed with the fetchrow, fetchrow_hash and last_row methods.</p>
+<p>
+</p>
+<h2><a name="query">query</a></h2>
+<p>query takes a string as an argument and passes it to dbi. As with the database methods it returns 0 on success or the error from dbi if there is one. As with the database methods, anything returned by the query needs to be accessed with the fetchrow, fetchrow_hash and last_row methods.</p>
+<p>
+</p>
+<hr />
+<h1><a name="joins">joins</a></h1>
+<p>IhasQuery does not currently support joins. Since joins should only be used on the server side in CREATE VIEW or STORED_PROCEDURE statements this is arguably a good thing. Since, in the real world programmers often do not have the proper access to the database, the eventual solution will be for IhasQuery to create its' own views and stored_update procedures.</p>
+<p>
+</p>
+<hr />
+<h1><a name="catalyst_models">Catalyst Models</a></h1>
+<p>If you want fast and simple access to your data, and don't need the intelligence and features that DBIx::Class offers, 
+an IhasQuery Model may be just what the Doctor ordered.</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>John Karr, <code>&lt;brainbuz at brainbuz.org&gt;</code></p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>Please report any bugs or feature requests to <code>bug-ihasquery at rt.cpan.org</code>, or through
+the web interface at <a href="http://rt.cpan.org/NoAuth/ReportBug.html?Queue=IhasQuery">http://rt.cpan.org/NoAuth/ReportBug.html</a>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.</p>
+<p>
+</p>
+<hr />
+<h1><a name="support">SUPPORT</a></h1>
+<p>You can find documentation for this module with the perldoc command.</p>
+<pre>
+    perldoc IhasQuery</pre>
+<p>You can also look for information at:</p>
+<ul>
+<li><strong><a name="rt_cpan_s_request_tracker" class="item">RT: CPAN's request tracker</a></strong>
+
+<p><a href="http://rt.cpan.org/NoAuth/Bugs.html?Dist=IhasQuery">http://rt.cpan.org/NoAuth/Bugs.html</a></p>
+</li>
+<li><strong><a name="annocpan_annotated_cpan_documentation" class="item">AnnoCPAN: Annotated CPAN documentation</a></strong>
+
+<p><a href="http://annocpan.org/dist/IhasQuery">http://annocpan.org/dist/IhasQuery</a></p>
+</li>
+<li><strong><a name="cpan_ratings" class="item">CPAN Ratings</a></strong>
+
+<p><a href="http://cpanratings.perl.org/d/IhasQuery">http://cpanratings.perl.org/d/IhasQuery</a></p>
+</li>
+<li><strong><a name="search_cpan" class="item">Search CPAN</a></strong>
+
+<p><a href="http://search.cpan.org/dist/IhasQuery/">http://search.cpan.org/dist/IhasQuery/</a></p>
+</li>
+</ul>
+<p>
+</p>
+<hr />
+<h1><a name="acknowledgements">ACKNOWLEDGEMENTS</a></h1>
+<p>
+</p>
+<hr />
+<h1><a name="license_and_copyright">LICENSE AND COPYRIGHT</a></h1>
+<p>Copyright 2010 John Karr.</p>
+<p>This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 3 or at your option
+any later version.</p>
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>A copy of the GNU General Public License is available in the source tree;
+if not, write to the Free Software Foundation, Inc.,
+59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.</p>
+
+</body>
+
+</html>
